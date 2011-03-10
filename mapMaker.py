@@ -40,12 +40,15 @@ for x in range(0,fontSize[0],elementSize[0]):
 # parse elements from image map
 elements = {}
 elementsGlyph = {}
+internalMap = []
 elementsString = ""
 for x in range(0,mapSize[0],elementSize[0]):
     for y in range(0,mapSize[1],elementSize[1]):
         #print x,y
         element = mapObject.crop([x,y,x+elementSize[0],y+elementSize[1]])
         md5sum = md5(str(list(element.getdata()))).hexdigest()
+        internalMap.append((x,y,md5sum))
+        print internalMap[x]
         # if map element is unique, export
         if not elements.has_key(md5sum):
             elements[md5sum]=1
@@ -64,7 +67,7 @@ for x in range(0,mapSize[0],elementSize[0]):
                 print "Could not find glyph for map element: "+md5sum
     
     
-    
+print internalMap[0]
     
 
 
