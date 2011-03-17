@@ -21,6 +21,28 @@ def RGBToHTMLColor(rgb_tuple):
     # that's it! '%02x' means zero-padded, 2-digit hex values
     return hexcolor
 
+def convertCharacter(char,iCharSet,oCharSet,option=''):
+    """ takes any given character in a character set, then outputs the resultant
+    unicode equivelent"""
+    
+    # special considerations in character sets
+    if iCharSet == 'cp437':     # cp437: chr(127) == (7F) which is 'delete', the others are 1 through 31 which have dual roles as well.
+        specialChars = {1: u'\u263A',2: u'\u263B',3: u'\u2665',4: u'\u2666',5: u'\u2663',6: u'\u2660',7: u'\u2022',8: u'\u25D8',9: u'\u25CB',10: u'\u25D9',11: u'\u2642',12: u'\u2640',13: u'\u266A',14: u'\u266B',15: u'\u263C',16: u'\u25BA',17: u'\u25C4',18: u'\u2195',19: u'\u203C',20: u'\u00B6',21: u'\u00A7',22: u'\u25AC',23: u'\u21A8',24: u'\u2191',25: u'\u2193',26: u'\u2192',27: u'\u2190',28: u'\u221F',29: u'\u2194',30: u'\u25B2',31: u'\u25BC',127: u'\u2302',}
+    # add more as necessary
+    else:
+        specialChars = {}
+        
+    found = False
+    for k,v in specialChars.iteritems():
+        if k == char:
+            found = True
+            return v.encode(oCharSet,option)
+            break
+
+    if not found:
+        return chr(char).decode(iCharSet).encode(oCharSet,option)
+    
+
 def usage():
     print """Usage: mapMaker.py options file
  Takes any character based image, such as a map, and covert it into 
@@ -112,7 +134,8 @@ elements = elementsGlyph = {}
 internalMap = []
 outputUTF = ""
 outputHTMLplain = "<body style='background-color:#000000'><pre>\n"
-outputHTMLimg = "<p style='width:2056px;'>"
+outputHTMLimg = "<p style='width:2056px;'>\n"
+outputCSV = '"x","y","codePageNumber","html entity","utf-8","colour";\n'
 
 # setup progressbar
 widgets = ['Processing: ', Percentage(), ' ', ETA() ]
@@ -154,13 +177,14 @@ for offsetY in range(0,mapSize[1],glyphSize[1]):
             elements[md5sum]=glyphCode,colour  
         
         internalMap.append((x,y,md5sum,glyphCode))
-        outputUTF+=chr(elements[md5sum][0]).decode('cp437').encode('utf-8')
-        outputHTMLplain+="<font color='"+RGBToHTMLColor(elements[md5sum][1])+"'>"+chr(elements[md5sum][0]).decode('cp437').encode('ascii', 'xmlcharrefreplace')+"</font>"
+        outputUTF+=convertCharacter(elements[md5sum][0], 'cp437', 'utf-8')
+        outputHTMLplain+="<font color='"+RGBToHTMLColor(elements[md5sum][1])+"'>"+convertCharacter(elements[md5sum][0],'cp437','ascii', 'xmlcharrefreplace')+"</font>"
         outputHTMLimg+="<img src='"+legendSave+md5sum+".bmp"+"' style='border:none; margin:0px; padding:0px;'/>"
+        outputCSV+='"'+str(x)+'","'+'"'+str(y)+'","'+'"'+str(elements[md5sum][0])+'","'+'"'+convertCharacter(elements[md5sum][0],'cp437','ascii', 'xmlcharrefreplace')+'","'+'"'+convertCharacter(elements[md5sum][0],'cp437','utf-8')+'","'+'"'+RGBToHTMLColor(elements[md5sum][1])+'"\n';
         x+=1
     outputUTF+="\n"
     outputHTMLplain += "\n"
-    outputHTMLimg += "<br/>"    
+    outputHTMLimg += "<br/>"
     y+=1
     #print x+y
     pbar.update(x+y)
@@ -178,6 +202,10 @@ fileObject.close()
 
 fileObject = open(workingDir+workingFile+".htm","w")
 fileObject.write(outputHTMLimg)
+fileObject.close()
+
+fileObject = open(workingDir+workingFile+".csv","w")
+fileObject.write(outputCSV)
 fileObject.close()
 
 pbar.finish()
