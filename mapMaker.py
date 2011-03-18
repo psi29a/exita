@@ -31,15 +31,10 @@ def convertCharacter(char,iCharSet,oCharSet,option=''):
     # add more as necessary
     else:
         specialChars = {}
-        
-    found = False
-    for k,v in specialChars.iteritems():
-        if k == char:
-            found = True
-            return v.encode(oCharSet,option)
-            break
-
-    if not found:
+    
+    if char in specialChars:
+        return specialChars[char].encode(oCharSet,option)    
+    else:
         return chr(char).decode(iCharSet).encode(oCharSet,option)
     
 
