@@ -7,7 +7,7 @@ path = []
 
 mapMaker = Executable(
     # what to build
-    script = "mapMaker.py",
+    script = "exita.py",
     initScript = None,
     #base = 'Win32GUI',
     #targetDir = r"dist",
@@ -20,9 +20,9 @@ mapMaker = Executable(
 )
 
 setup(
-        name = "mapMaker",
-        version = "0.1",
-        description = "Exports character based image maps to text",
+        name = "Exita",
+        version = "0.2",
+        description = "Exports character based images to ascii",
         options = {"build_exe": {"includes": includes,
                              "excludes": excludes,
                              "packages": packages,
@@ -30,6 +30,6 @@ setup(
                              }
                },
 
-        executables = [mapMaker]
+        executables = [exita]
 )
 

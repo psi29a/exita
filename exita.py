@@ -1,10 +1,27 @@
 #!/usr/bin/python
-# Export from an image map information based on system characters such cp437.
+#
+# Exita :  export images to ascii
+# Copyright (C) 2011 Bret Curtis
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 import os, errno, sys, getopt
 from PIL import Image
 from hashlib import md5
 from progressbar import ProgressBar, Percentage, ETA
+from modules.charSet import charSet
 
 def mkdir_p(path):
     """ python version of mkdir -p """
@@ -24,25 +41,19 @@ def RGBToHTMLColor(rgb_tuple):
 def convertCharacter(char,iCharSet,oCharSet,option=''):
     """ takes any given character in a character set, then outputs the resultant
     unicode equivelent"""
-    
-    # special considerations in character sets
-    if iCharSet == 'cp437':     # cp437: chr(127) == (7F) which is 'delete', the others are 1 through 31 which have dual roles as well.
-        specialChars = {1: u'\u263A',2: u'\u263B',3: u'\u2665',4: u'\u2666',5: u'\u2663',6: u'\u2660',7: u'\u2022',8: u'\u25D8',9: u'\u25CB',10: u'\u25D9',11: u'\u2642',12: u'\u2640',13: u'\u266A',14: u'\u266B',15: u'\u263C',16: u'\u25BA',17: u'\u25C4',18: u'\u2195',19: u'\u203C',20: u'\u00B6',21: u'\u00A7',22: u'\u25AC',23: u'\u21A8',24: u'\u2191',25: u'\u2193',26: u'\u2192',27: u'\u2190',28: u'\u221F',29: u'\u2194',30: u'\u25B2',31: u'\u25BC',127: u'\u2302',}
-    # add more as necessary
-    else:
-        specialChars = {}
-    
+
+    specialChars = charSet('cp437').specialChars()
+
     if char in specialChars:
-        return specialChars[char].encode(oCharSet,option)    
+        return specialChars[char].encode(oCharSet,option)
     else:
         return chr(char).decode(iCharSet).encode(oCharSet,option)
-    
+
 
 def usage():
-    print """Usage: mapMaker.py options file
- Takes any character based image, such as a map, and covert it into 
- human/machine parsable parts.
-  
+    print """Usage: exita.py options file
+ Converts character based image into human/machine parsable parts.
+
 Options:
     -c  int     : Code page to use for decoding image, default is "cp437"
     -s  string  : Size of character set, default is "8,12"
@@ -50,14 +61,16 @@ Options:
     -o  string  : Output method: txt, html, htmimg, csv and all, default is "all"
     -f  string  : "/location/to/file" to be processed
     -h  --help  : Prints this help message
- 
-Examples:
-./mapMaker.py -f /opt/df/worldMap.bmp
-./mapMaker.py -c cp437 -g 256 -o all -f /opt/df/worldMap.bmp
 
+Examples:
+./exita.py -f /opt/df/worldMap.bmp
+./exita.py -c cp437 -g 256 -o all -f /opt/df/worldMap.bmp
+
+    Exita  Copyright (C) 2011  Bret Curtis
+    This program comes with ABSOLUTELY NO WARRANTY.
 """
 
-# default parameters 
+# default parameters
 inputFile = ""
 codePage = "cp437"
 glyphSize = [8,12]
@@ -70,7 +83,7 @@ try:
 except getopt.GetoptError:
     usage()
     sys.exit(2)
-for opt, arg in opts: 
+for opt, arg in opts:
     if opt in ("-c"):
         codePage = arg
     elif opt in ("-s"):
@@ -86,8 +99,8 @@ for opt, arg in opts:
         sys.exit()
     else:
         usage()
-        sys.exit(2)        
-        
+        sys.exit(2)
+
 # some sanity checking
 if os.path.exists(inputFile):
     workingDir = os.path.dirname(arg)+os.sep
@@ -102,7 +115,7 @@ if len(glyphSize) == 2:
 else:
     usage()
     sys.exit("Your code page (glypsh) size is incorrect.")
-    
+
 if not os.path.exists(glyphMap):
     usage()
     sys.exit("The file: "+glyphMap+" does not exist. Please check your fonts directory.")
@@ -162,15 +175,15 @@ for offsetY in range(0,mapSize[1],glyphSize[1]):
             if not foundFont:
                 glyphCode=-1
                 print "Could not find glyph for map element: "+md5sum
-                
+
             # find the colour of the glyph, as it could have additional meaning.
             for pixelColour in list(element.getdata()):
                 if not pixelColour == colour: # pure black
                     colour = pixelColour
                     break
-                
-            elements[md5sum]=glyphCode,colour  
-        
+
+            elements[md5sum]=glyphCode,colour
+
         internalMap.append((x,y,md5sum,glyphCode))
         outputUTF+=convertCharacter(elements[md5sum][0], 'cp437', 'utf-8')
         outputHTMLplain+="<font color='"+RGBToHTMLColor(elements[md5sum][1])+"'>"+convertCharacter(elements[md5sum][0],'cp437','ascii', 'xmlcharrefreplace')+"</font>"
@@ -186,7 +199,7 @@ for offsetY in range(0,mapSize[1],glyphSize[1]):
 
 outputHTMLplain += "</pre>\n"
 outputHTMLimg += "</p>\n"
-    
+
 fileObject = open(workingDir+workingFile+".txt","w")
 fileObject.write(outputUTF)
 fileObject.close()
