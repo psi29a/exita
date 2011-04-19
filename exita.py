@@ -58,13 +58,12 @@ Options:
     -c  int     : Code page to use for decoding image, default is "cp437"
     -s  string  : Size of character set, default is "8,12"
     -g  int     : Number of glyps in code page, default is "256"
-    -o  string  : Output method: txt, html, htmimg, csv and all, default is "all"
     -f  string  : "/location/to/file" to be processed
     -h  --help  : Prints this help message
 
 Examples:
 ./exita.py -f /opt/df/worldMap.bmp
-./exita.py -c cp437 -g 256 -o all -f /opt/df/worldMap.bmp
+./exita.py -c cp437 -g 256 -o -f /opt/df/worldMap.bmp
 
     Exita  Copyright (C) 2011  Bret Curtis
     This program comes with ABSOLUTELY NO WARRANTY.
