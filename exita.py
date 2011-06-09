@@ -62,26 +62,26 @@ Options:
     -h  --help  : Prints this help message
 
 Examples:
-./exita.py -f /opt/df/worldMap.bmp
-./exita.py -c cp437 -g 256 -o -f /opt/df/worldMap.bmp
+./exita.py /opt/df/worldMap.bmp
+./exita.py -c cp437 -g 256 /opt/df/worldMap.bmp
 
     Exita  Copyright (C) 2011  Bret Curtis
     This program comes with ABSOLUTELY NO WARRANTY.
 """
 
 # default parameters
-inputFile = ""
 codePage = "cp437"
 glyphSize = [8,12]
 glyphs = 256
-outputType = "all"
+inputFile = ""
 
 # parse our options and arguments
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hc:s:g:o:f:")
+    opts, remainders = getopt.getopt(sys.argv[1:], "hc:s:g:o:")
 except getopt.GetoptError:
     usage()
     sys.exit(2)
+
 for opt, arg in opts:
     if opt in ("-c"):
         codePage = arg
@@ -89,10 +89,6 @@ for opt, arg in opts:
         glyphSize = eval("["+arg+"]")
     elif opt in ("-g"):
         glyphs = arg
-    elif opt in ("-o"):
-        outputType = arg
-    elif opt in ("-f"):
-        inputFile = arg
     elif opt in ("-h", "--help"):
         usage()
         sys.exit()
@@ -100,11 +96,15 @@ for opt, arg in opts:
         usage()
         sys.exit(2)
 
+for remainder in remainders:
+    inputFile = remainder
+
 # some sanity checking
-if os.path.exists(inputFile):
-    workingDir = os.path.dirname(arg)+os.sep
-    workingFile = os.path.basename(arg)
+if inputFile != "" and os.path.exists(inputFile):
+    workingDir = os.path.dirname(inputFile)+os.sep
+    workingFile = os.path.basename(inputFile)
     legendSave = workingDir+"legend"+os.sep
+    print "Scanning "+ inputFile+" and the results can be found here: "+workingDir
 else:
     usage()
     sys.exit("The file: "+inputFile+" does not exist.")
