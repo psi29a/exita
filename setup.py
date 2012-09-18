@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 """
 from cx_Freeze import setup, Executable
 
-includes = ['encodings.cp437','encodings.utf_8','encodings.ascii']
+includes = ['encodings.cp437', 'encodings.utf_8', 'encodings.ascii']
 excludes = []
 packages = []
 path = []
 
-mapMaker = Executable(
+mapMaker = Executable( 
     # what to build
     script = "exita.py",
     initScript = None,
@@ -34,9 +34,9 @@ mapMaker = Executable(
     appendScriptToExe = False,
     appendScriptToLibrary = False,
     icon = None,
-)
+ )
 
-setup(
+setup( 
         name = "Exita",
         version = "0.2",
         description = "Exports character based images to ascii",
@@ -48,5 +48,5 @@ setup(
                },
 
         executables = [exita]
-)
+ )
 
