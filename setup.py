@@ -15,6 +15,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301 USA
 """
+
 from cx_Freeze import setup, Executable
 
 includes = ['encodings.cp437', 'encodings.utf_8', 'encodings.ascii']
@@ -49,4 +50,3 @@ setup(
 
         executables = [exita]
  )
-
