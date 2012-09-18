@@ -115,7 +115,7 @@ if len( glyphSize ) == 2:
     glyphMap = os.getcwd() + os.sep + "fonts" + os.sep + codePage + "-" + "x".join( map( str, glyphSize ) ) + ".pbm"
 else:
     usage()
-    sys.exit( "Your code page (glypsh) size is incorrect." )
+    sys.exit( "Your code page (glyph) size is incorrect." )
 
 if not os.path.exists( glyphMap ):
     usage()
