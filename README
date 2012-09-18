@@ -1,0 +1,29 @@
+Exita: EXport Images To Ascii
+
+Exita is a data export tool that functions like an OCR application 
+but for a specific character set.
+
+Version: 0.2 
+Author:  Bret Curtis
+License: LGPL v2 (See COPYRIGHT for more information)
+Website: http://www.mindwerks.net/projects/exita/
+
+
+REQUIREMENTS
+* Python >= 2.7
+* Libs: PIL, progressbar
+
+INSTALLATION
+* Untar/unzip into directory and run exita.py
+
+
+HOW: Exita reads in an image and breaks it apart into cells based on 
+the height and width of the character set bitmap used (e.g. cp437-8×12). 
+With each cell in an image, it tries to find a match and return the 
+proper text character.
+
+NOTICE: Some character sets like cp437 have dual-use characters that 
+have a glyph when printed but are also used as control characters. 
+These are handled by the “special characters” module which can be 
+extended to support more character sets.
+
